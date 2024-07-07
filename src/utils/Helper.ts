@@ -1,0 +1,23 @@
+import * as bcrypt from 'bcrypt';
+
+export async function hashPassword(password: string): Promise<string> {
+  if (!password) {
+    throw new Error('Password is required');
+  }
+
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(password, salt);
+  return hashedPassword;
+}
+
+export async function checkPassword(
+  password: string,
+  hashedPassword: string,
+): Promise<boolean> {
+  if (!password || !hashedPassword) {
+    throw new Error('Password and hashed password are required');
+  }
+
+  const match = await bcrypt.compare(password, hashedPassword);
+  return match;
+}

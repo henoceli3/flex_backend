@@ -1,12 +1,45 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
-import { UserService } from './user/user.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { RoleModule } from './role/role.module';
+import { TransactionsModule } from './transactions/transactions.module';
+import { TypeTransactionsModule } from './type-transactions/type-transactions.module';
+import * as dotenv from 'dotenv';
+import { LoggerMiddleware } from './middleware/logger-middleware/logger-middleware';
+import { JwtModule } from '@nestjs/jwt';
+
+dotenv.config();
 
 @Module({
-  imports: [UsersModule],
+  imports: [
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: process.env.POSTGRES_HOST,
+      username: process.env.POSTGRES_USER,
+      password: process.env.POSTGRES_PASSWORD,
+      database: process.env.POSTGRES_DATABASE,
+      port: Number(process.env.DATABASE_PORT),
+      entities: ['dist/**/*.entity{.ts,.js}'],
+      synchronize: true,
+      ssl: true,
+    }),
+    JwtModule.register({
+      global: true,
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '60s' },
+    }),
+    UsersModule,
+    RoleModule,
+    TransactionsModule,
+    TypeTransactionsModule,
+  ],
   controllers: [AppController],
-  providers: [AppService, UserService],
+  providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
+  }
+}
