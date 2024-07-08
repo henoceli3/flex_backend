@@ -9,15 +9,14 @@ import { Repository } from 'typeorm';
 import { UsersEntity } from './users.entity/users.entity';
 import { IResponse } from 'src/utils/Interface';
 import { v4 } from 'uuid';
-import { checkPassword, hashPassword } from 'src/utils/Helper';
-import { JwtService } from '@nestjs/jwt';
+import { HelperService } from 'src/helper/helper.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(UsersEntity)
     private usersRepository: Repository<UsersEntity>,
-    private jwtService: JwtService,
+    private readonly helperService: HelperService,
   ) {}
 
   async findAll(): Promise<IResponse> {
@@ -117,7 +116,7 @@ export class UsersService {
       return {
         resultat: await this.usersRepository.save({
           ...user,
-          password: await hashPassword(user.password),
+          password: await this.helperService.hashPassword(user.password),
           uuid: v4(),
           is_active: true,
           created_at: new Date(),
@@ -182,23 +181,105 @@ export class UsersService {
       });
     }
   }
-
-  async login(email: string, password: string): Promise<IResponse> {
+  async restore(id: number): Promise<IResponse> {
     try {
-      console.log(email, password);
       const user = await this.usersRepository.findOne({
-        where: { email, is_active: true },
+        where: { id, is_active: false },
       });
       if (!user) {
         throw new NotFoundException('User not found');
       }
-      const match = await checkPassword(password, user.password);
-      if (!match) {
-        throw new NotAcceptableException('Password incorrect');
-      }
-      const payload = { sub: user.id, telephone: user.telephone };
       return {
-        resultat: { user, token: this.jwtService.sign(payload) },
+        resultat: await this.usersRepository.save({
+          ...user,
+          is_active: true,
+          deleted_at: null,
+        }),
+        message: 'Success',
+      };
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException({
+        resultat: null,
+        message: error.message,
+      });
+    }
+  }
+
+  async updatePassword(
+    id: number,
+    oldPassword: string,
+    password: string,
+  ): Promise<IResponse> {
+    try {
+      const user = await this.usersRepository.findOne({
+        where: { id, is_active: true },
+      });
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+      const match = await this.helperService.checkPassword(
+        oldPassword,
+        user.password,
+      );
+      if (!match) {
+        throw new NotAcceptableException(
+          'Le mot de passe actuel est incorrect',
+        );
+      }
+      return {
+        resultat: await this.usersRepository.save({
+          ...user,
+          password: await this.helperService.hashPassword(password),
+        }),
+        message: 'Success',
+      };
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException({
+        resultat: null,
+        message: error.message,
+      });
+    }
+  }
+
+  async restorePassword(id: number, password: string): Promise<IResponse> {
+    try {
+      const user = await this.usersRepository.findOne({
+        where: { id, is_active: true },
+      });
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+      return {
+        resultat: await this.usersRepository.save({
+          ...user,
+          password: await this.helperService.hashPassword(password),
+        }),
+        message: 'Success',
+      };
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException({
+        resultat: null,
+        message: error.message,
+      });
+    }
+  }
+
+  async updatePhoto(id: number, photo: string): Promise<IResponse> {
+    try {
+      const user = await this.usersRepository.findOne({
+        where: { id, is_active: true },
+      });
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+      return {
+        resultat: await this.usersRepository.save({
+          ...user,
+          photo,
+        }),
         message: 'Success',
       };
     } catch (error) {

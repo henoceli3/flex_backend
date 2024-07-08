@@ -9,6 +9,8 @@ import { TypeTransactionsModule } from './type-transactions/type-transactions.mo
 import * as dotenv from 'dotenv';
 import { LoggerMiddleware } from './middleware/logger-middleware/logger-middleware';
 import { JwtModule } from '@nestjs/jwt';
+import { AuthentificationModule } from './authentification/authentification.module';
+import { HelperService } from './helper/helper.service';
 
 dotenv.config();
 
@@ -34,9 +36,10 @@ dotenv.config();
     RoleModule,
     TransactionsModule,
     TypeTransactionsModule,
+    AuthentificationModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, HelperService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
