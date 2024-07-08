@@ -5,22 +5,22 @@ export class UsersEntity {
   @PrimaryGeneratedColumn({ type: 'int' })
   id: number;
 
-  @Column({ nullable: false, unique: true })
+  @Column({ nullable: true, unique: true })
   uuid: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   nom: string;
 
   @Column({ nullable: true })
   prenoms: string;
 
-  @Column({ nullable: false, unique: true })
+  @Column({ nullable: true, unique: true })
   telephone: string;
 
-  @Column({ nullable: false, unique: true })
+  @Column({ nullable: true, unique: true })
   email: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   password: string;
 
   @Column({ nullable: true, unique: true })
@@ -38,19 +38,19 @@ export class UsersEntity {
   @Column({ nullable: true, unique: true })
   cni_verso: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   code: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   solde: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   role_id: number;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   is_active: boolean;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   created_at: Date;
 
   @Column({ nullable: true })

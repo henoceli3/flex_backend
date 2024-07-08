@@ -5,10 +5,10 @@ export class RoleEntity {
   @PrimaryGeneratedColumn({ type: 'int' })
   id: number;
 
-  @Column({ nullable: false, unique: true })
+  @Column({ nullable: true, unique: true })
   uuid: string;
 
-  @Column({ nullable: false, unique: true })
+  @Column({ nullable: true, unique: true })
   libelle: string;
 
   @Column({ nullable: true })

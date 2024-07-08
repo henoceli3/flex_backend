@@ -5,28 +5,28 @@ export class TransactionsEntity {
   @PrimaryGeneratedColumn({ type: 'int' })
   id: number;
 
-  @Column({ nullable: false, unique: true })
+  @Column({ nullable: true, unique: true })
   uuid: string;
 
-  @Column({ nullable: false, unique: true })
+  @Column({ nullable: true, unique: true })
   numero_transaction: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   montant: number;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   type_transaction_id: number;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   beneficiaire_id: number;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   expediteur_id: number;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   etat_transaction: boolean;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   created_at: Date;
 
   @Column({ nullable: true })
