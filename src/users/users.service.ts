@@ -290,4 +290,57 @@ export class UsersService {
       });
     }
   }
+
+  async updateCni(id: number, cni: string): Promise<IResponse> {
+    try {
+      const user = await this.usersRepository.findOne({
+        where: { id, is_active: true },
+      });
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+      return {
+        resultat: await this.usersRepository.save({
+          ...user,
+          cni,
+        }),
+        message: 'Success',
+      };
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException({
+        resultat: null,
+        message: error.message,
+      });
+    }
+  }
+
+  async updateCniImage(
+    id: number,
+    cni_recto: string,
+    cni_verso: string,
+  ): Promise<IResponse> {
+    try {
+      const user = await this.usersRepository.findOne({
+        where: { id, is_active: true },
+      });
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+      return {
+        resultat: await this.usersRepository.save({
+          ...user,
+          cni_recto,
+          cni_verso,
+        }),
+        message: 'Success',
+      };
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException({
+        resultat: null,
+        message: error.message,
+      });
+    }
+  }
 }

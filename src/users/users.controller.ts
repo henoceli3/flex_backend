@@ -11,7 +11,10 @@ import {
 import { UsersService } from './users.service';
 import { UsersEntity } from './users.entity/users.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
+import * as path from 'path';
+import { diskStorage } from 'multer';
 import { v4 } from 'uuid';
+import { Request } from 'express';
 
 @Controller('users')
 export class UsersController {
@@ -68,20 +71,51 @@ export class UsersController {
   @Post('updatePhoto/:id')
   @UseInterceptors(
     FileInterceptor('photo', {
-      storage: {
+      storage: diskStorage({
         destination: './uploads',
         filename: (req: Request, file: Express.Multer.File, cb: any) => {
-          const filename: string = file.originalname;
-          cb(null, file.fieldname, filename);
+          const filename: string = `${v4()}${path.extname(file.originalname)}`;
+          cb(null, filename);
         },
-      },
+      }),
     }),
   )
   async updatePhoto(
     @Param('id') id: number,
     @UploadedFile() photo: Express.Multer.File,
   ) {
-    const photoName = v4() + '-' + photo.originalname;
-    return await this.usersService.updatePhoto(id, photoName);
+    return await this.usersService.updatePhoto(id, photo.filename);
+  }
+
+  @Post('updateCni/:id')
+  async updateCni(
+    @Param('id') id: number,
+    @Body('cni') cni: Express.Multer.File,
+  ) {
+    return await this.usersService.updateCni(id, cni.filename);
+  }
+
+  @Post('updateCniImage/:id')
+  @UseInterceptors(
+    FileInterceptor('cni_recto', {
+      storage: diskStorage({
+        destination: './uploads',
+        filename: (req: Request, file: Express.Multer.File, cb: any) => {
+          const filename: string = `${v4()}${path.extname(file.originalname)}`;
+          cb(null, filename);
+        },
+      }),
+    }),
+  )
+  async updateCniImage(
+    @Param('id') id: number,
+    @UploadedFile() cni_recto: Express.Multer.File,
+    @UploadedFile() cni_verso: Express.Multer.File,
+  ) {
+    return await this.usersService.updateCniImage(
+      id,
+      cni_recto.filename,
+      cni_verso.filename,
+    );
   }
 }
