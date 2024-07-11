@@ -22,7 +22,6 @@ export class AuthentificationService {
 
   async login(email: string, password: string): Promise<IResponse> {
     try {
-      console.log(email, password);
       const user = await this.usersRepository.findOne({
         where: { email, is_active: true },
       });
