@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Query,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -26,9 +27,19 @@ export class UsersController {
     return await this.usersService.findAll();
   }
 
-  @Get(':id')
-  async findOne(@Param('id') id: number) {
+  @Get('by-id')
+  async findOne(@Query('id') id: number) {
     return await this.usersService.findOne(id);
+  }
+
+  @Get('by-number')
+  async getByNumber(@Query('number') number: string) {
+    return await this.usersService.getByNumber(number);
+  }
+
+  @Get('get-solde')
+  async getSolde(@Param('id') id: number) {
+    return await this.usersService.getSolde(id);
   }
 
   @Post('create')

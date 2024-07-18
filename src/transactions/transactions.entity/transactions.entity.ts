@@ -24,7 +24,7 @@ export class TransactionsEntity {
   expediteur_id: number;
 
   @Column({ nullable: true })
-  etat_transaction: boolean;
+  etat_transaction: number;
 
   @Column({ nullable: true })
   created_at: Date;

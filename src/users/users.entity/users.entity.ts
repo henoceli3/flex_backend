@@ -42,7 +42,7 @@ export class UsersEntity {
   code: string;
 
   @Column({ nullable: true })
-  solde: string;
+  solde: number;
 
   @Column({ nullable: true })
   role_id: number;

@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   NotAcceptableException,
@@ -21,28 +22,29 @@ export class UsersService {
 
   async findAll(): Promise<IResponse> {
     try {
+      const users = await this.usersRepository.find({
+        where: { is_active: true },
+        select: [
+          'id',
+          'nom',
+          'prenoms',
+          'cni',
+          'photo',
+          'email',
+          'telephone',
+          'date_naissance',
+          'uuid',
+          'cni_recto',
+          'cni_verso',
+          'created_at',
+          'updated_at',
+          'deleted_at',
+          'role_id',
+          'solde',
+        ],
+      });
       return {
-        resultat: await this.usersRepository.find({
-          where: { is_active: true },
-          select: [
-            'id',
-            'nom',
-            'prenoms',
-            'cni',
-            'photo',
-            'email',
-            'telephone',
-            'date_naissance',
-            'uuid',
-            'cni_recto',
-            'cni_verso',
-            'created_at',
-            'updated_at',
-            'deleted_at',
-            'role_id',
-            'solde',
-          ],
-        }),
+        resultat: users,
         message: 'Success',
       };
     } catch (error) {
@@ -56,8 +58,11 @@ export class UsersService {
 
   async findOne(id: number): Promise<IResponse> {
     try {
+      if (!id) {
+        throw new BadRequestException('Id not found');
+      }
       const user = await this.usersRepository.findOne({
-        where: { id, is_active: true },
+        where: { id: id, is_active: true },
         select: [
           'id',
           'nom',
@@ -80,8 +85,56 @@ export class UsersService {
       if (!user) {
         throw new NotFoundException('User not found');
       }
+      user.password = null;
       return {
         resultat: user,
+        message: 'Success',
+      };
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException({
+        resultat: null,
+        message: error.message,
+      });
+    }
+  }
+
+  async getByNumber(number: string): Promise<IResponse> {
+    try {
+      if (!number) {
+        throw new BadRequestException('Number not found');
+      }
+      const user = await this.usersRepository.findOne({
+        where: { telephone: number, is_active: true },
+      });
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+      user.password = null;
+      return {
+        resultat: user,
+        message: 'Success',
+      };
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException({
+        resultat: null,
+        message: error.message,
+      });
+    }
+  }
+
+  async getSolde(id: number): Promise<IResponse> {
+    try {
+      const user = await this.usersRepository.findOne({
+        where: { id, is_active: true },
+        select: ['solde'],
+      });
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+      return {
+        resultat: user.solde,
         message: 'Success',
       };
     } catch (error) {

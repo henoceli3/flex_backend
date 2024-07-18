@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, Post } from '@nestjs/common';
 import { AuthentificationService } from './authentification.service';
 
 @Controller('authentification')
@@ -7,6 +7,7 @@ export class AuthentificationController {
     private readonly authentificationService: AuthentificationService,
   ) {}
 
+  @HttpCode(200)
   @Post('login')
   async login(
     @Body('email') email: string,
