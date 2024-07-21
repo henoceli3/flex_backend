@@ -37,7 +37,11 @@ export class AuthentificationService {
       }
       const payload = { user: user, telephone: user.telephone };
       return {
-        resultat: { user, token: this.jwtService.sign(payload) },
+        resultat: {
+          user,
+          code: user.code,
+          token: this.jwtService.sign(payload),
+        },
         message: 'Success',
       };
     } catch (error) {
