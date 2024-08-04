@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RoleEntity } from './role.entity/role.entity';
 import { Repository } from 'typeorm';
@@ -13,11 +13,15 @@ export class RoleService {
   async findAll(id?: number): Promise<RoleEntity[]> {
     try {
       if (id) {
-        return await this.roleRepository.find({ where: { id } });
+        return await this.roleRepository.find({ where: { id: id } });
       }
       return await this.roleRepository.find();
     } catch (error) {
       console.log(error);
+      throw new InternalServerErrorException({
+        resultat: null,
+        message: error.message,
+      });
     }
   }
 }

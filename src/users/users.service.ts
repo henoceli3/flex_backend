@@ -166,14 +166,15 @@ export class UsersService {
       if (userTelephoneExists) {
         throw new NotAcceptableException('Telephone déjà utilisé');
       }
+      const createed_user = await this.usersRepository.save({
+        ...user,
+        password: await this.helperService.hashPassword(user.password),
+        uuid: v4(),
+        is_active: true,
+        created_at: new Date(),
+      });
       return {
-        resultat: await this.usersRepository.save({
-          ...user,
-          password: await this.helperService.hashPassword(user.password),
-          uuid: v4(),
-          is_active: true,
-          created_at: new Date(),
-        }),
+        resultat: { user: createed_user },
         message: 'Success',
       };
     } catch (error) {
