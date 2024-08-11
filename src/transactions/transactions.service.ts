@@ -161,7 +161,7 @@ export class TransactionsService {
         });
       }
 
-      //   debut de la transaction
+      // debut de la transaction
       transaction.etat_transaction = 0;
       // on cherche l'expediteur en bd pour lui retirer la somme du depot
       const expediteur = await this.userResposistery.findOne({
@@ -210,13 +210,31 @@ export class TransactionsService {
           message: 'Error',
         });
       }
+
+      const renderLibelleTransaction = () => {
+        switch (transaction.type_transaction_id) {
+          case 1:
+            return `Depot`;
+          case 2:
+            return `Retrait`;
+          case 3:
+            return `à ${beneficiaire.nom} ${beneficiaire.prenoms} ${beneficiaire.telephone}`;
+          case 4:
+            return `Paiement ${beneficiaire.nom} ${beneficiaire.prenoms}`;
+          default:
+            return `Transaction`;
+        }
+      };
+
       const transact = await this.transactionsRepository.save({
         ...transaction,
         uuid: v4(),
+        libelle: renderLibelleTransaction(),
         numero_transaction: v4(),
         etat_transaction: 2,
         created_at: new Date(),
       });
+
       return {
         resultat: {
           ...transact,

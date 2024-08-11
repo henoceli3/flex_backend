@@ -10,12 +10,10 @@ export class RoleService {
     private roleRepository: Repository<RoleEntity>,
   ) {}
 
-  async findAll(id?: number): Promise<RoleEntity[]> {
+  async findAll() {
     try {
-      if (id) {
-        return await this.roleRepository.find({ where: { id: id } });
-      }
-      return await this.roleRepository.find();
+      const all = await this.roleRepository.find();
+      return { resultat: all, message: 'Success' };
     } catch (error) {
       console.log(error);
       throw new InternalServerErrorException({

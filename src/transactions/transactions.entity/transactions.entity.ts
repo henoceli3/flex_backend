@@ -12,6 +12,9 @@ export class TransactionsEntity {
   numero_transaction: string;
 
   @Column({ nullable: true })
+  libelle: string;
+
+  @Column({ nullable: true })
   montant: number;
 
   @Column({ nullable: true })
