@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import shortUUID from 'short-uuid';
 
 @Injectable()
 export class HelperService {
@@ -22,9 +21,4 @@ export class HelperService {
     const match = await bcrypt.compare(password, hashedPassword);
     return match;
   }
-
-  generateShortUUID = () => {
-    const translator = shortUUID();
-    return translator.new();
-  };
 }
